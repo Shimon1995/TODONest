@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { remove } from 'lodash';
 import { users } from 'src/users/users';
-
-export type TODO = any;
+import { TODO } from './todo.interface';
+import { v4 as uid } from 'uuid';
 
 @Injectable()
 export class TodoService {
@@ -11,7 +11,13 @@ export class TodoService {
         return users.find(user => user.userId === userId).todo.reverse();
     }
 
-    addToDo(userId: string, todo: TODO) {
+    addToDo(userId: string, context: string) {
+        const id = uid();
+        const todo: TODO = {
+            id,
+            context,
+            done: false,
+        };
         users.find(user => user.userId === userId).todo.push(todo);
     }
 

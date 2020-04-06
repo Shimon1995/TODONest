@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { v4 as uid } from 'uuid';
-import { todo } from 'src/todo/todo';
 import { hash, compare } from 'bcrypt';
+import User from 'src/users/User';
 
 @Injectable()
 export class AuthService {
@@ -20,10 +19,11 @@ export class AuthService {
   }
 
   async register(username: string, pass: string) {
-    const id = uid();
+    
     const password = await hash(pass, 10);
-    this.usersService.addOne({id, username, password, todo});
-    return { id, username, password, todo };
+    const user = new User(username, password);
+    this.usersService.addOne(user);
+    return user;
   }
 
   async login(user: any) {

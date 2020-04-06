@@ -1,9 +1,10 @@
-import { Controller, Get, Post, UseGuards, Request, Body, Delete } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Request, Body, Delete, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { UsersService } from './users/users.service';
 import { TodoService } from './todo/todo.service';
+import { RegistrationDTO, AddingToDoDTO, UpdateToDoDTO, DoToDoDTO, RemoveToDoDTO } from './dto';
 
 @Controller()
 export class AppController {
@@ -14,7 +15,7 @@ export class AppController {
   ) {}
 
   @Post('auth/register')
-  async register(@Body() body: {username: string; password: string}) {
+  async register(@Body(new ValidationPipe) body: RegistrationDTO) {
     return this.authService.register(body.username, body.password);
   }
 
@@ -38,25 +39,25 @@ export class AppController {
 
   @UseGuards(JwtAuthGuard)
   @Post('todos') 
-  addTodo(@Request() req, @Body() body) {
-    this.todoService.addToDo(req.userId, body);
+  addTodo(@Request() req, @Body(new ValidationPipe) body: AddingToDoDTO) {
+    this.todoService.addToDo(req.userId, body.newContext);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('patch-todos')
-  patchToDo(@Request() req, @Body() body) {
+  patchToDo(@Request() req, @Body(new ValidationPipe) body: UpdateToDoDTO) {
     this.todoService.updateToDo(req.userId, body.id, body.newContext);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('do-doto')
-  doToDo(@Request() req, @Body() body) {
+  doToDo(@Request() req, @Body(new ValidationPipe) body: DoToDoDTO) {
     this.todoService.doneToDo(req.userId, body.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('remove-todo')
-  removeTodo(@Request() req, @Body() body) {
+  removeTodo(@Request() req, @Body(new ValidationPipe) body: RemoveToDoDTO) {
     this.todoService.removeToDo(req.userId, body.id);
   }
 }
