@@ -30,35 +30,30 @@ export class TodoService {
 
     async doneToDo(userId: string, id: string) {
         const { todo } = await this.userModel.findOne({ userId });
-        const newTodo: TODO[] = [];
         todo.forEach(t => {
             if (t.id === id) {
                 t.done = !t.done;
             }
-            newTodo.push(t);
         });
-        return this.userModel.updateOne({ userId }, { $set: { todo: newTodo } }).exec();
+        return this.userModel.updateOne({ userId }, { $set: { todo } }).exec();
     }
 
     async updateToDo(userId: string, id: string, newContext: string) {
         const { todo } = await this.userModel.findOne({ userId });
-        const newTodo: TODO[] = [];
-        todo.map(t => {
+        todo.forEach(t => {
             if (t.id === id) {
                 t.context = newContext;
             }
-            newTodo.push(t);
         });
         return this.userModel.updateOne(
             { userId }, 
-            { $set: { todo: newTodo } }
+            { $set: { todo } }
         ).exec();
     }
 
-    async removeToDo(userId: string, id: string) {
+    async removeToDo(userId: string, id: string): Promise<string> {
         const { todo } = await this.userModel.findOne({ userId });
         remove(todo, t => t.id === id);
-        console.log(todo);
         return this.userModel.updateOne({ userId }, { $set: { todo } });
     }
 }
