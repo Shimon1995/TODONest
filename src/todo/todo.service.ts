@@ -15,7 +15,7 @@ export class TodoService {
         return result.todo.reverse()
     }
 
-    async addToDo(userId: string, context: string) {
+    async addToDo(userId: string, context: string): Promise<any> {
         const id = uid();
         const todo: TODO = {
             id,
@@ -28,7 +28,7 @@ export class TodoService {
         ).exec();
     }
 
-    async doneToDo(userId: string, id: string) {
+    async doneToDo(userId: string, id: string): Promise<any> {
         const { todo } = await this.userModel.findOne({ userId });
         todo.forEach(t => {
             if (t.id === id) {
@@ -38,7 +38,7 @@ export class TodoService {
         return this.userModel.updateOne({ userId }, { $set: { todo } }).exec();
     }
 
-    async updateToDo(userId: string, id: string, newContext: string) {
+    async updateToDo(userId: string, id: string, newContext: string): Promise<any> {
         const { todo } = await this.userModel.findOne({ userId });
         todo.forEach(t => {
             if (t.id === id) {
@@ -51,7 +51,7 @@ export class TodoService {
         ).exec();
     }
 
-    async removeToDo(userId: string, id: string): Promise<string> {
+    async removeToDo(userId: string, id: string): Promise<any> {
         const { todo } = await this.userModel.findOne({ userId });
         remove(todo, t => t.id === id);
         return this.userModel.updateOne({ userId }, { $set: { todo } });

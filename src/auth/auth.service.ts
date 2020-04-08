@@ -27,7 +27,6 @@ export class AuthService {
   async login(username: string, userId: string): Promise<any> {
     const payload = { username: username, sub: userId };
     return {
-      // eslint-disable-next-line @typescript-eslint/camelcase
       access_token: this.jwtService.sign(payload)
     }
   }
