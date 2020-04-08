@@ -1,11 +1,12 @@
-import { Controller, Get, Post, UseGuards, Request, Body, Delete, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Body, Delete, ValidationPipe } from '@nestjs/common';
+import { RegistrationDTO, AddingToDoDTO, UpdateToDoDTO, DoToDoDTO, RemoveToDoDTO } from './dto';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { UsersService } from './users/users.service';
 import { TodoService } from './todo/todo.service';
-import { RegistrationDTO, AddingToDoDTO, UpdateToDoDTO, DoToDoDTO, RemoveToDoDTO } from './dto';
 import { User } from './users/user.interface';
+import { User as UserDec } from 'src/users/user.decorator';
 
 @Controller()
 export class AppController {
@@ -22,45 +23,45 @@ export class AppController {
 
   @UseGuards(AuthGuard('local'))
   @Post('auth/login')
-  async login(@Request() req) {
-    const { userId, username } = req.user._doc;
+  async login(@UserDec() user) {
+    console.log(user);
+    const { userId, username } = user._doc;
     return this.authService.login(userId, username);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
-    return this.userService.findOne(req.user.userId);
+  getProfile(@UserDec() user: User) {
+    return this.userService.findOne(user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('todos')
-  getDotos(@Request() req) {
-    return this.todoService.getToDos(req.user.username);
+  getDotos(@UserDec() user: User) {
+    return this.todoService.getToDos(user.username);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('todos') 
-  async addTodo(@Request() req, @Body(new ValidationPipe) body: AddingToDoDTO) {
-    // console.log(req.user);
-    return this.todoService.addToDo(req.user.username, body.newContext); // username swaped with userId
+  async addTodo(@UserDec() user: User, @Body(new ValidationPipe) body: AddingToDoDTO) {
+    return this.todoService.addToDo(user.username, body.newContext); // username swaped with userId
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('patch-todos')
-  async patchToDo(@Request() req, @Body(new ValidationPipe) body: UpdateToDoDTO) {
-    return this.todoService.updateToDo(req.user.username, body.id, body.newContext);
+  async patchToDo(@UserDec() user: User, @Body(new ValidationPipe) body: UpdateToDoDTO) {
+    return this.todoService.updateToDo(user.username, body.id, body.newContext);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('do-todo')
-  async doToDo(@Request() req, @Body(new ValidationPipe) body: DoToDoDTO) {
-    return this.todoService.doneToDo(req.user.username, body.id);
+  async doToDo(@UserDec() user: User, @Body(new ValidationPipe) body: DoToDoDTO) {
+    return this.todoService.doneToDo(user.username, body.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('remove-todo')
-  removeTodo(@Request() req, @Body(new ValidationPipe) body: RemoveToDoDTO) {
-    return this.todoService.removeToDo(req.user.username, body.id);
+  removeTodo(@UserDec() user: User, @Body(new ValidationPipe) body: RemoveToDoDTO) {
+    return this.todoService.removeToDo(user.username, body.id);
   }
 }
