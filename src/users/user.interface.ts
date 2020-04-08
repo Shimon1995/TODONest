@@ -5,5 +5,5 @@ export interface User extends Document {
     userId: string;
     username: string;
     password: string;
-    doto?: TODO;
+    todo: TODO[];
 }

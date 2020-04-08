@@ -10,7 +10,7 @@ export class UsersService {
   constructor(@InjectModel('User') private userModel: Model<UserInterface>) {}
 
   async findOne(username: string): Promise<UserInterface | undefined> {
-    return this.userModel.findOne({ username: username }).exec();
+    return this.userModel.findOne({ username }).exec();
   }
 
   async addOne(user: User): Promise<UserInterface> {

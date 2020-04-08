@@ -30,36 +30,37 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
-    return this.userService.findOne(req.user.username);
+    return this.userService.findOne(req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('todos')
   getDotos(@Request() req) {
-    return this.todoService.getToDos(req.user.userId);
+    return this.todoService.getToDos(req.user.username);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('todos') 
-  addTodo(@Request() req, @Body(new ValidationPipe) body: AddingToDoDTO) {
-    this.todoService.addToDo(req.userId, body.newContext);
+  async addTodo(@Request() req, @Body(new ValidationPipe) body: AddingToDoDTO) {
+    // console.log(req.user);
+    return this.todoService.addToDo(req.user.username, body.newContext); // username swaped with userId
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('patch-todos')
-  patchToDo(@Request() req, @Body(new ValidationPipe) body: UpdateToDoDTO) {
-    this.todoService.updateToDo(req.userId, body.id, body.newContext);
+  async patchToDo(@Request() req, @Body(new ValidationPipe) body: UpdateToDoDTO) {
+    return this.todoService.updateToDo(req.user.username, body.id, body.newContext);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('do-doto')
-  doToDo(@Request() req, @Body(new ValidationPipe) body: DoToDoDTO) {
-    this.todoService.doneToDo(req.userId, body.id);
+  @Post('do-todo')
+  async doToDo(@Request() req, @Body(new ValidationPipe) body: DoToDoDTO) {
+    return this.todoService.doneToDo(req.user.username, body.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('remove-todo')
   removeTodo(@Request() req, @Body(new ValidationPipe) body: RemoveToDoDTO) {
-    this.todoService.removeToDo(req.userId, body.id);
+    return this.todoService.removeToDo(req.user.username, body.id);
   }
 }
