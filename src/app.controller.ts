@@ -5,6 +5,7 @@ import { AuthService } from './auth/auth.service';
 import { UsersService } from './users/users.service';
 import { TodoService } from './todo/todo.service';
 import { RegistrationDTO, AddingToDoDTO, UpdateToDoDTO, DoToDoDTO, RemoveToDoDTO } from './dto';
+import { User } from './users/user.interface';
 
 @Controller()
 export class AppController {
@@ -15,14 +16,15 @@ export class AppController {
   ) {}
 
   @Post('auth/register')
-  async register(@Body(new ValidationPipe) body: RegistrationDTO) {
+  async register(@Body(new ValidationPipe) body: RegistrationDTO): Promise<User> {
     return this.authService.register(body.username, body.password);
   }
 
   @UseGuards(AuthGuard('local'))
   @Post('auth/login')
   async login(@Request() req) {
-    return this.authService.login(req.user);
+    const { userId, username } = req.user._doc;
+    return this.authService.login(userId, username);
   }
 
   @UseGuards(JwtAuthGuard)
